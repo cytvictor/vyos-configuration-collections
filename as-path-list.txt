@@ -1,0 +1,45 @@
+# as-path-list matchers command scripts for VyOS/Vyatta
+# 
+# This file includes multiple as-path machers that can be applied
+# in route-map filter and/or the BGP session, implementing
+# best-practices.
+# 
+# @updated Apr 17, 2020
+
+edit policy as-path-list Instance-ASN
+  set rule 10 description "AS number used in this BGP instance"
+  set rule 10 action permit
+  set rule 10 regex "^$"
+
+  exit
+
+edit policy as-path-list Bogons-ASN
+  set rule 10 description "RFC7607"
+  set rule 10 action permit
+  set rule 10 regex ".*0.*"
+  
+  set rule 20 description "RFC 4893 AS_TRANS"
+  set rule 20 action permit
+  set rule 20 regex ".*23456.*"
+  
+  set rule 30 description "RFC 5398 and documentation/example ASNs"
+  set rule 30 action permit
+  set rule 30 regex ".*6449[6-9]|6450[0-9]|6451[01].*"
+  
+  set rule 40 description "RFC 5398 and documentation/example ASNs"
+  set rule 40 action permit
+  set rule 40 regex ".*6553[6-9]|6554[0-9]|6555[01].*"
+  
+  set rule 50 description "RFC 6996 Private ASNs"
+  set rule 50 action permit
+  set rule 50 regex ".*6451[2-9]|645[2-9][0-9]|64[6-9][0-9]{2}|65[0-4][0-9]{2}|655[0-2][0-9]|6553[0-5].*"
+  
+  set rule 60 description "RFC 6996 Private ASNs"
+  set rule 60 action permit
+  set rule 60 regex ".*42[0-8][0-9]{7}|429[0-3][0-9]{6}|4294[0-8][0-9]{5}|42949[0-5][0-9]{4}|429496[0-6][0-9]{3}|4294967[01][0-9]{2}|42949672[0-8][0-9]|429496729[0-5].*"
+  
+  set rule 70 description "RFC IANA reserved ASNs"
+  set rule 70 action permit
+  set rule 70 regex ".*6555[2-9]|655[6-9][0-9]|65[6-9][0-9]{2}|6[6-9][0-9]{3}|[7-9][0-9]{4}|1[0-2][0-9]{4}|130[0-9]{3}|1310[0-6][0-9]|13107[01].*"
+
+  exit

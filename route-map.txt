@@ -1,0 +1,45 @@
+# route-map filters command scripts for VyOS/Vyatta
+# 
+# This file includes a route-map filter that can be applied on
+# the BGP session and peer-groups, implementing best-practices.
+# 
+# @updated Apr 17, 2020
+
+edit policy route-map RejectBogons
+  set description "Reject bogon ASNs and route prefixes."
+
+  edit rule 10
+    set action deny
+    set match ip address prefix-list Small-IPv4
+    up
+
+  edit rule 20
+    set action deny
+    set match ipv6 address prefix-list Small-IPv6
+    up
+
+  edit rule 30
+    set action deny
+    set description "Reject routes with bogon AS numbers in the as-path"
+    set match as-path Bogons-ASN
+    up
+
+  edit rule 40
+    set action deny
+    set description "Reject bogon IPv4 prefixes"
+    set match ip address prefix-list Bogons-IPv4
+    up
+
+  edit rule 50
+    set action deny
+    set description "Reject bogon AS numbers in the as-path"
+    set match ipv6 address prefix-list Bogons-IPv6
+    up
+
+  edit rule 100
+    set action permit
+    up
+
+
+
+  exit

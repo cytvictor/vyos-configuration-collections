@@ -1,0 +1,54 @@
+# HKIX filtering scripts command scripts for VyOS/Vyatta
+# 
+# This file includes multiple prefix machers that can be applied
+# on route-map filter and/or the BGP session and several useful
+# route-map policies that take HKIX as an example, implementing 
+# best-practices.
+# 
+# @updated Apr 17, 2020
+
+edit policy prefix-list HKIX-LAN4
+  set rule 10 action permit
+  set rule 10 le 32
+  set rule 10 prefix 123.255.88.0/21
+
+  exit
+
+edit policy prefix-list6 HKIX-LAN6
+  set rule 10 action permit
+  set rule 10 le 128
+  set rule 10 prefix 2001:7FA:0:1::/64
+
+  exit
+
+edit policy route-map Reject-HKIX-LAN
+  set rule 10 action deny
+  set rule 10 match ip address prefix-list HKIX-LAN4
+
+  set rule 20 action deny
+  set rule 20 match ipv6 address prefix-list HKIX-LAN6
+
+  set rule 30 action permit
+
+  exit
+
+# Used in `protocols bgp <instance AS> [ neighbor <remote-address> | peer-group ] address-family [ ipv4-unicast | ipv6-unicast ] [ import | export ] route-map <route-map-name>`
+
+edit policy route-map HKIXRS-IN
+  set rule 10 action permit
+  set rule 10 call RejectBogons
+  set rule 10 on-match next
+
+  set rule 20 action permit
+  set rule 20 call Reject-HKIX-LAN
+
+  exit
+
+edit policy route-map HKIXRS-OUT
+  set rule 10 action permit
+  set rule 10 call RejectBogons
+  set rule 10 on-match next
+
+  set rule 20 action permit
+  set rule 20 call Reject-HKIX-LAN
+  exit

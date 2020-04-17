@@ -1,0 +1,172 @@
+# prefix-list matchers command scripts for VyOS/Vyatta
+# 
+# This file includes multiple prefix machers that can be applied
+# on route-map filter and/or the BGP session, implementing
+# best-practices.
+# 
+# @updated Apr 17, 2020
+
+edit policy prefix-list Small-IPv4
+  set description "Matches IPv4 block that is smaller than /24"
+
+  set rule 10 le 24
+  set rule 10 prefix 0.0.0.0/0
+  set rule 10 action deny
+
+  set rule 20 le 32
+  set rule 20 prefix 0.0.0.0/0
+  set rule 20 action permit
+
+  exit
+
+edit policy prefix-list6 Small-IPv6
+  set description "Matches IPv6 block that is smaller than /48"
+
+  set rule 10 le 48
+  set rule 10 prefix ::/0
+  set rule 10 action deny
+
+  set rule 20 le 128
+  set rule 20 prefix ::/0
+  set rule 20 action permit
+
+  exit
+
+edit policy prefix-list Bogons-IPv4
+  set description "Check if the IPv4 prefix is non-globally routable prefixes"
+
+  set rule 10 le 32
+  set rule 10 action permit
+  set rule 10 prefix 0.0.0.0/8
+  set rule 10 description "RFC 1918 private space"
+
+  set rule 20 le 32
+  set rule 20 action permit
+  set rule 20 prefix 10.0.0.0/8
+  set rule 20 description "RFC 1918 private space"
+
+  set rule 30 le 32
+  set rule 30 action permit
+  set rule 30 prefix 100.64.0.0/10
+  set rule 30 description "RFC 6598 Carrier grade nat space"
+
+  set rule 40 le 32
+  set rule 40 action permit
+  set rule 40 prefix 127.0.0.0/8
+  set rule 40 description "RFC 1122 localhost"
+
+  set rule 50 le 32
+  set rule 50 action permit
+  set rule 50 prefix 169.254.0.0/16
+  set rule 50 description "RFC 3927 link local"
+
+  set rule 60 le 32
+  set rule 60 action permit
+  set rule 60 prefix 172.16.0.0/12
+  set rule 60 description "RFC 1918 private space "
+
+  set rule 70 le 32
+  set rule 70 action permit
+  set rule 70 prefix 192.0.2.0/24
+  set rule 70 description "RFC 5737 TEST-NET-1"
+
+  set rule 80 le 32
+  set rule 80 action permit
+  set rule 80 prefix 192.88.99.0/24
+  set rule 80 description "RFC 7526 6to4 anycast relay"
+
+  set rule 90 le 32
+  set rule 90 action permit
+  set rule 90 prefix 192.168.0.0/16
+  set rule 90 description "RFC 1918 private space"
+
+  set rule 100 le 32
+  set rule 100 action permit
+  set rule 100 prefix 198.18.0.0/15
+  set rule 100 description "RFC 2544 benchmarking"
+
+  set rule 110 le 32
+  set rule 110 action permit
+  set rule 110 prefix 198.51.100.0/24
+  set rule 110 description "RFC 5737 TEST-NET-2"
+
+  set rule 120 le 32
+  set rule 120 action permit
+  set rule 120 prefix 203.0.113.0/24
+  set rule 120 description "RFC 5737 TEST-NET-3"
+
+  set rule 130 le 32
+  set rule 130 action permit
+  set rule 130 prefix 224.0.0.0/4
+  set rule 130 description "multicast"
+
+  set rule 140 le 32
+  set rule 140 action permit
+  set rule 140 prefix 240.0.0.0/4
+  set rule 140 description "reserved"
+
+  set rule 150 action permit
+  set rule 150 prefix 0.0.0.0/0
+  set rule 150 description "Default route"
+
+  exit
+
+edit policy prefix-list6 Bogons-IPv6
+  set description "Check if the IPv6 prefix is non-globally routable prefixes"
+
+  set rule 10 prefix ::/8
+  set rule 10 action permit
+  set rule 10 description "RFC 4291 IPv4-compatible, loopback, et al"
+  set rule 10 le 128
+
+  set rule 20 prefix 0100::/64
+  set rule 20 action permit
+  set rule 20 description "RFC 6666 Discard-Only"
+  set rule 20 le 128
+
+  set rule 30 prefix 2001:2::/48
+  set rule 30 action permit
+  set rule 30 description "RFC 5180 BMWG"
+  set rule 30 le 128
+
+  set rule 40 prefix 2001:10::/28
+  set rule 40 action permit
+  set rule 40 description "RFC 4843 ORCHID"
+  set rule 40 le 128
+
+  set rule 50 prefix 2001:db8::/32
+  set rule 50 action permit
+  set rule 50 description "RFC 3849 documentation"
+  set rule 50 le 128
+
+  set rule 60 prefix 2002::/16
+  set rule 60 action permit
+  set rule 60 description "RFC 7526 6to4 anycast relay"
+  set rule 60 le 128
+
+  set rule 70 prefix 3ffe::/16
+  set rule 70 action permit
+  set rule 70 description "RFC 3701 old 6bone"
+  set rule 70 le 128
+
+  set rule 80 prefix fc00::/7
+  set rule 80 action permit
+  set rule 80 description "RFC 4193 unique local unicast"
+  set rule 80 le 128
+
+  set rule 90 prefix fe80::/10
+  set rule 90 action permit
+  set rule 90 description "RFC 4291 link local unicast"
+  set rule 90 le 128
+
+  set rule 100 prefix fec0::/10
+  set rule 100 action permit
+  set rule 100 description "RFC 3879 old site local unicast"
+  set rule 100 le 128
+
+  set rule 110 prefix ff00::/8
+  set rule 110 le 128
+  set rule 110 action permit
+  set rule 110 description "RFC 4291 multicast"
+
+  exit
